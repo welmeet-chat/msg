@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Chat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #chat-log {
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 300px;
+            overflow-y: scroll;
+        }
+        #message-input {
+            width: 80%;
+        }
+        #send-message {
+            width: 18%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simple Chat</h1>
+    <div id="chat-log"></div>
+    <input id="message-input" type="text" placeholder="Type a message...">
+    <button id="send-message">Send</button>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        document.getElementById('send-message').onclick = function() {
+            const messageInput = document.getElementById('message-input');
+            socket.emit('message', messageInput.value);
+            messageInput.value = '';
+        };
+
+        socket.on('message', (message) => {
+            const chatLog = document.getElementById('chat-log');
+            // Append the received message to the chat log
+            const messageElement = document.createElement('div');
+            messageElement.textContent = message;
+            chatLog.appendChild(messageElement);
+        });
+    </script>
+</body>
+</html>
