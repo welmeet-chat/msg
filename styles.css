@@ -1,0 +1,8 @@
+video {
+    width: 80%;
+    max-width: 800px;
+    margin: 0;
+    padding: 0;
+    display: block;
+    object-fit: cover; /* Add this line */
+}
