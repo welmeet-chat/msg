@@ -1,53 +1,210 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Songs</title>
+  <title>Welmeet.com</title>
+  <link rel="icon" href="C:\Users\Admin\Desktop\chat\welmeetlogo.png"> 
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-        }
-        .headline {
-            background-color: #0ca1fe ;
-            color: #FFFFFF;
-            padding: 20px;
-            text-align: center;
-            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-        }
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%;
-            display: flex;
-            overflow: hidden;
-            max-width: 100%;
-            background-color: #FFFFFF;
-        }
-        
-        video {
-            width: 80%;
-            max-width: 800px;
-            margin: 0;
-            padding: 0;
-            display: block;
-        }
-        .video-title {
-            font-size: 15px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            text-align: top;
-        }
-    </style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7; /* light grey background */
+    }
+    #header {
+      background-color: #007bff; /* blue background */
+      color: #ffffff; /* white text */
+      padding: 20px;
+      text-align: center;
+      font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    }
+    #chat-container {
+      padding: 20px;
+    }
+    #message-input {
+      width: 50%;
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+    }
+    #send-button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #send-button:hover {
+      background-color: #3e8e41;
+    }
+    #chat-log {
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #e1e0e0;
+      height:300px;
+      overflow-y: auto;
+    }
+    .message {
+      margin-bottom: 10px;
+      padding: 10px;
+      border-bottom:1px solid #ccc;
+    }
+    #footer {
+      background-color: #c7e1ee;
+      padding: 10px;
+      text-align: center;
+      color: #0a0909;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: bold;
+    }
+    #login-form {  
+      padding: 20px;
+      text-align: center;
+    }
+    #create-account {
+      background-color: #007bff;
+      font-size: 18px;
+      font-weight: bold;
+      color: #f7f7f7;
+    }
+    .box {
+      background-color: #f7f7f7;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      width: 50%;
+      margin: 20px auto;
+    }
+    .box h2 {
+      background-color: #007bff;
+      color: #fff;
+      padding: 10px;
+      border-bottom: 1px solid #ccc;
+    }
+    .box input[type="text"], .box input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+    .box button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .box button:hover {
+      background-color: #3e8e41;
+    }
+  </style>
 </head>
 <body>
-    <div class="headline">SA Trends</div>
-    <div class="video-container">
-        <h2 class="video-title">Maara - yaar azhaippadhu</h2>
-        <video controls>
-             <source src="c:\Users\Admin\Downloads\Maara _ Yaar Azhaippadhu Video Song _ Ghibran _ Thamarai _ Sid Sriram _ Dhilip Kumar.mp4" type="video/mp4">
-             Your browser does not support the video tag.
-        </video>
-    </div>
+  <div id="header">
+    <img src="C:\Users\Admin\Desktop\chat\welmeetlogo.png" />
+    <h1>Welmeet</h1>
+  </div>
+  <div class="box">
+    <h2 id="create-account">Create New Account</h2>
+    <input id="create-username" type="text" placeholder="Enter your username...">
+    <input id="create-password" type="password" placeholder="Create your strong password...">
+    <button id="create-button">Create Account</button>
+  </div>
+  <div class="box">
+    <h2>Login</h2>
+    <input id="username" type="text" placeholder="Enter your username...">
+    <input id="password" type="password" placeholder="Enter your password...">
+    <button id="login-button">Login</button>
+  </div>
+  <div id="chat-container" style="display: none;">
+    <input id="message-input" type="text" placeholder="Type a message...">
+    <button id="send-button">Send</button>
+    <div id="chat-log"></div>
+  </div>
+  <div id="footer">
+    <p>Welmeet Is Developing By Abi and Sanjay @2024 ... Inprogressing</p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/socket.io@2.3.0/dist/socket.io.js"></script>
+  <script>
+    let socket;
+    let username = '';
+    let token = '';
+
+    // Create a new Socket.IO connection
+    socket = io('http://localhost:3000')
+
+    // Create account button event listener
+document.getElementById('create-button').addEventListener('click', (e) => {
+  e.preventDefault();
+  const createUsernameInput = document.getElementById('create-username');
+  const createPasswordInput = document.getElementById('create-password');
+  fetch('/create-account', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: createUsernameInput.value, password: createPasswordInput.value }),
+  })
+  .then(response => response.json())
+  .then((data) => {
+    console.log('Account created successfully!');
+    createUsernameInput.value = '';
+    createPasswordInput.value = '';
+    // Redirect to home page
+    window.location.href = '/home';
+  })
+  .catch((error) => {
+    console.error('Error creating account:', error);
+  });
+});
+
+    // Login button event listener
+    document.getElementById('login-button').addEventListener('click', (e) => {
+      e.preventDefault();
+      const usernameInput = document.getElementById('username');
+      const passwordInput = document.getElementById('password');
+      fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: usernameInput.value, password: passwordInput.value }),
+      })
+      .then(response => response.json())
+      .then((data) => {
+        token = data.token;
+        username = usernameInput.value;
+        socket.emit('login', token);
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('chat-container').style.display = 'block';
+      })
+      .catch((error) => {
+        console.error('Error logging in:', error);
+      });
+    })
+
+    // Send message button event listener
+    document.getElementById('send-button').addEventListener('click', () => {
+      const messageInput = document.getElementById('message-input');
+      socket.emit('message', { text: messageInput.value, username: username });
+      messageInput.value = '';
+    })
+
+    // Socket.IO event listeners
+    socket.on('login', () => {
+      console.log('Logged in successfully!');
+    })
+
+    socket.on('error', (error) => {
+      console.error('Error:', error);
+    })
+
+    socket.on('message', (data) => {
+      const messageElement = document.createElement('div');
+      messageElement.className = 'message';
+      messageElement.textContent = `${data.username}: ${data.text}`;
+      document.getElementById('chat-log').appendChild(messageElement);
+    });
+  </script>
 </body>
 </html>
